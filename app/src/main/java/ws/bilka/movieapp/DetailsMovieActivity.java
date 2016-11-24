@@ -1,10 +1,12 @@
 package ws.bilka.movieapp;
 
+import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -18,9 +20,13 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import it.sephiroth.android.library.picasso.MemoryPolicy;
 import it.sephiroth.android.library.picasso.Picasso;
+import ws.bilka.movieapp.adapter.GridViewAdapter;
+import ws.bilka.movieapp.model.ActorsItem;
 
 public class DetailsMovieActivity extends AppCompatActivity {
 
@@ -33,6 +39,10 @@ public class DetailsMovieActivity extends AppCompatActivity {
     ProgressBar progressBar;
     LinearLayout linearLayout;
     ScrollView scrollView;
+
+    private ExpandableHeightGridView gridView;
+    private GridViewAdapter viewAdapter;
+    private List<ActorsItem> actors;
 
     String[] genresArray;
 
@@ -54,10 +64,27 @@ public class DetailsMovieActivity extends AppCompatActivity {
         genresDetail = (TextView)findViewById(R.id.genresDetail);
         runtimeDetail = (TextView)findViewById(R.id.runtimeDetail);
         linearLayout = (LinearLayout)findViewById(R.id.linearLayout);
+        actors = new ArrayList<ActorsItem>();
+
+        gridView = (ExpandableHeightGridView)findViewById(R.id.gridView);
+        viewAdapter = new GridViewAdapter(this, actors);
+        gridView.setAdapter(viewAdapter);
+        gridView.setExpanded(true);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ActorsItem item = actors.get(position);
+                Intent actorInfoIntent = new Intent(DetailsMovieActivity.this, SearchPeopleActivity.class);
+                actorInfoIntent.putExtra("peopleName", item.getName());
+                actorInfoIntent.putExtra("actorId", item.getId());
+                startActivity(actorInfoIntent);
+            }
+        });
 
         new DetailsMovieTask("https://api.themoviedb.org/3/movie/" + movieId + Constants.API_KEY + Constants.LANGUAGE).execute();
-
+        new CastMovieTask("https://api.themoviedb.org/3/movie/" + movieId + "/credits?api_key=d7a07f705e7b7d0621c22ebfd7d94bba").execute();
     }
+
 
     class DetailsMovieTask extends AsyncTask<Void, Void, String> {
         private String url;
@@ -165,6 +192,76 @@ public class DetailsMovieActivity extends AppCompatActivity {
             scrollView.setVisibility(View.VISIBLE);
             linearLayout.setVisibility(View.VISIBLE);
             imageDetail.setVisibility(View.VISIBLE);
+        }
+    }
+
+    class CastMovieTask extends AsyncTask<Void, Void, String> {
+        private String url;
+
+        public CastMovieTask(String url) {
+            this.url = url;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                URL url = new URL(this.url);
+                Log.i(TAG, "URL: " + url);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+                try {
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String line;
+                    while ((line = bufferedReader.readLine()) != null) {
+                        stringBuilder.append(line).append("\n");
+                    }
+                    bufferedReader.close();
+                    return stringBuilder.toString();
+                } finally {
+                    urlConnection.disconnect();
+                }
+            } catch (Exception e) {
+                Log.e("ERROR", e.getMessage(), e);
+                return null;
+            }
+        }
+
+        protected void onPostExecute(String strJson) {
+            super.onPostExecute(strJson);
+
+            if (strJson == null) {
+                strJson = "THERE WAS AN ERROR";
+            }
+            JSONObject dataJsonObj = null;
+            try {
+                dataJsonObj = new JSONObject(strJson);
+
+                JSONArray castArray = dataJsonObj.getJSONArray("cast");
+
+                for (int i = 0; i < castArray.length(); i++) {
+                    JSONObject castJSONObject = castArray.getJSONObject(i);
+                    ActorsItem actorItem = new ActorsItem();
+
+                    String castId = castJSONObject.getString("id");
+                    actorItem.setId(castId);
+
+                    String castName = castJSONObject.getString("name");
+                    actorItem.setName(castName);
+
+                    String castCharacter = castJSONObject.getString("character");
+                    actorItem.setCharacter(castCharacter);
+
+                    String castPhoto = castJSONObject.getString("profile_path");
+                    actorItem.setPhoto(castPhoto);
+
+                    actors.add(actorItem);
+                }
+                viewAdapter.notifyDataSetChanged();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
