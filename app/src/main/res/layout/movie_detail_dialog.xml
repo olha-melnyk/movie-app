@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <ws.bilka.movieapp.DynamicImageView
+        android:id="@+id/imageDetail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:layout_alignBottom="@id/imageDetail">
+
+        <ScrollView android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="#80000000">
+
+                <LinearLayout
+                    android:id="@+id/progressbarLinear"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/titleDetail"
+                        android:layout_marginBottom="@dimen/margin_5dp"
+                        android:layout_marginLeft="@dimen/margin_5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Text Shadow Example1"
+                        android:layout_gravity="start"
+                        android:textColor="#FBFBFB"
+                        android:textSize="17dp"
+                        android:textStyle="bold"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_marginBottom="@dimen/margin_5dp"
+                            android:layout_marginLeft="@dimen/margin_5dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start"
+                            android:textColor="#FBFBFB"
+                            android:textSize="17dp"
+                            android:textStyle="bold"
+                            android:text="("/>
+                        <TextView
+                            android:id="@+id/releaseYear"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start"
+                            android:textColor="#FBFBFB"
+                            android:textSize="17dp"
+                            android:textStyle="bold"
+                            android:text="date"/>
+                        <TextView
+                            android:layout_marginBottom="@dimen/margin_5dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start"
+                            android:textColor="#FBFBFB"
+                            android:textSize="17dp"
+                            android:textStyle="bold"
+                            android:text=")"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/margin_5dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/star"/>
+
+                            <TextView
+                                android:id="@+id/rating"
+                                android:layout_marginBottom="@dimen/margin_5dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="@dimen/margin_20dp"
+                                android:layout_marginLeft="@dimen/margin_10dp"
+                                android:text="8.3"
+                                android:layout_gravity="center"
+                                android:textColor="#FBFBFB"
+                                android:textSize="15dp"
+                                android:textStyle="normal"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/overviewDetail"
+                        android:layout_marginBottom="@dimen/margin_10dp"
+                        android:layout_marginLeft="@dimen/margin_15dp"
+                        android:layout_marginRight="@dimen/margin_10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Text Shadow Example1"
+                        android:layout_gravity="start"
+                        android:textColor="#FBFBFB"
+                        android:textSize="12dp"
+                        android:textStyle="normal"
+                        android:layout_below="@+id/progressbarLinear"/>
+                </LinearLayout>
+            </RelativeLayout>
+        </ScrollView>
+    </LinearLayout>
+</RelativeLayout>
