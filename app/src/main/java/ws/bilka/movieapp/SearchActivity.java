@@ -1,13 +1,16 @@
 package ws.bilka.movieapp;
 
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -16,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import it.sephiroth.android.library.picasso.MemoryPolicy;
+import it.sephiroth.android.library.picasso.Picasso;
 import ws.bilka.movieapp.adapter.NowPlayingAdapter;
 import ws.bilka.movieapp.model.NowPlayingItem;
 
@@ -175,6 +181,41 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
+            }
+        });
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                final Dialog alert = new Dialog(SearchActivity.this);
+                LayoutInflater inflater = SearchActivity.this.getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.movie_detail_dialog, null);
+                Window window = alert.getWindow();
+                window.requestFeature(Window.FEATURE_NO_TITLE);
+                alert.setContentView(dialogView);
+                DynamicImageView imageViewDetail = (DynamicImageView) dialogView.findViewById(R.id.imageDetail);
+                NowPlayingItem item = mNowPlayingItems.get(position);
+
+                try {
+                    Picasso.with(getBaseContext()).load("https://image.tmdb.org/t/p/w300_and_h450_bestv2/"
+                            + item.getNowPlayingPoster()).placeholder(R.drawable.placeholder300x450)
+                            .error(R.drawable.placeholder300x450).memoryPolicy(MemoryPolicy.NO_CACHE).into(imageViewDetail);
+
+                    TextView titleDetail = (TextView) dialogView.findViewById(R.id.titleDetail);
+                    titleDetail.setText(item.getNowPlayingTitle());
+
+                    TextView overviewDetail = (TextView) dialogView.findViewById(R.id.overviewDetail);
+                    overviewDetail.setText(item.getNowPlayingOverview());
+
+                    TextView releaseYear = (TextView) dialogView.findViewById(R.id.releaseYear);
+                    releaseYear.setText(item.getNowPlayingYear());
+
+                    TextView ratingDetail = (TextView) dialogView.findViewById(R.id.rating);
+                    ratingDetail.setText(item.getNowPlayingRating());
+                } catch (Exception e) {
+                    Log.e("ERROR", e.getMessage(), e);
+                }
+                alert.show();
             }
         });
     }
